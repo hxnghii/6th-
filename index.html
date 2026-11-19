@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy our 6th anniverary</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%8C%3C/text%3E%3C/svg%3E">
+
+    <link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Xóa viền xanh khi chạm trên điện thoại */
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fcfcfc;
+        }
+
+        /* Background chính tối ưu cho màn hình dọc của điện thoại */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('bg.jpg'); /* Ảnh 1 */
+            background-size: cover;
+            background-position: center center;
+            transition: filter 0.8s ease;
+            z-index: 1;
+        }
+
+        /* Khi mở thư thì background mờ đi một xíu */
+        .background-container.blur {
+            filter: blur(5px) brightness(0.85);
+        }
+
+        /* Khung chứa phong bì và nút bấm ban đầu */
+        .envelope-wrapper {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 0 20px;
+            gap: 25px;
+            transition: all 0.5s ease;
+        }
+
+        .page-title {
+            color: #5b88ba;
+            font-family: 'Patrick Hand', cursive;
+            font-size: clamp(2rem, 7vw, 2.7rem);
+            line-height: 1.1;
+            text-align: center;
+            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Ảnh phong bì thư (Ảnh 2) - Tự co giãn theo màn hình điện thoại */
+        .envelope-img {
+            width: 80%;
+            max-width: 280px;
+            height: auto;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* Nút Read tối ưu cho ngón tay chạm bấm */
+        .read-btn {
+            padding: 14px 45px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #82b7ed, #b9d8ff);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(130, 183, 237, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .read-btn:active {
+            transform: scale(0.95); /* Hiệu ứng lún xuống khi chạm tay vào */
+        }
+
+        /* Dòng chú thích nhỏ */
+        .note {
+            font-size: 0.85rem;
+            color: #555;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 6px 16px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Ô chữ nhật nội dung thư (Tạo bằng code) */
+        .letter-box {
+            position: fixed;
+            z-index: 3;
+            width: 90%; /* Vừa vặn hai bên màn hình đt */
+            max-width: 410px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+            padding: 35px 25px 85px 25px; /* Chừa khoảng trống bên dưới cho sticker */
+            opacity: 0;
+            transform: scale(0.8) translateY(60px);
+            pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 78vh; /* Không vượt quá chiều cao màn hình */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hiển thị thư */
+        .letter-box.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Chữ viết tay trong thư */
+        .letter-content {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.35rem;
+            color: #2c2c2c;
+            line-height: 1.6;
+            overflow-y: auto; /* Tự động hiện thanh cuộn mượt nếu thư dài */
+            white-space: pre-line;
+            padding-right: 5px;
+            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iPhone */
+        }
+
+        /* Tinh chỉnh thanh cuộn cho nhỏ gọn */
+        .letter-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .letter-content::-webkit-scrollbar-thumb {
+            background-color: #b9d8ff;
+            border-radius: 3px;
+        }
+
+        /* Sticker mèo nơ (Ảnh 3) cố định ở góc dưới bên phải hộp thư */
+        .cat-sticker {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 70px; /* Kích thước vừa vặn cho điện thoại */
+            height: auto;
+            pointer-events: none;
+        }
+
+        /* Ẩn mượt phần phong bì */
+        .envelope-wrapper.hide {
+            opacity: 0;
+            transform: scale(0.6);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop src="music.mp3"></audio>
+
+    <div class="background-container" id="bg"></div>
+
+    <div class="envelope-wrapper" id="envelopeSection">
+        <h1 class="page-title">Happy Our 6th Anni</h1>
+        <img src="letter.png" alt="Letter" class="envelope-img">
+        <button class="read-btn" onclick="openLetter()">Skibidiii</button>
+        <p class="note">Happy Boy's Day!!&gt;&lt;</p>
+    </div>
+
+    <div class="letter-box" id="letterBox">
+        <div class="letter-content">
+            Gửi Minh Cường,
+            Chúc anh 19/11 vui vẻ và kỉ niệm mình cùng nhau cố gắng trong 6 tháng qua thật trọn vẹn nhenn. Nửa năm thôi nhưng bọn mình trải qua rất nhiều thứ, cũng nhẫn nhịn và chấp nhận đối phương rất nhiều điều, em mong về sau, chúng mình sẽ gặp ít trắc trở hơn để bên nhau thật vui vẻ, để em có thể làm chỗ dựa cho anh, chỉ mình em thôi :3
+            
+            Em mong anh cũng yêu em như em yêu anh, em thật lòng rất yêu anh và rất nghiêm túc với lựa chọn của bản thân, và anh sẽ là người đầu tiên em nắm tay, cũng sẽ là người cuối cùng trong đời em. Dù còn quá sớm để nói chuyện tương lai xa xôi, nhưng em rất quý hành trình vừa qua, để nhìn lại thì 2 đứa mình cố gắng rất nhiều. Em bỏ qua hết cho anh, chấp nhận mọi thứ vì em rất thương anh. Và cũng mong chồng em cũng trân trọng tình cảm của em ạaa. 
+            
+            Chuyện vừa qua cũng làm em suy nghĩ rất nhiều, rất khó chấp nhận với em, và cũng rất khó để em có thể tin anh hết tình cảm nhất thời kia rồi, em sẽ cố hehe, vì em yêu anh lắm, em tin anh, thật sự rất tin Minh Cường của em. Em cũng thất vọng nhiều lắm, khả năng là suy sụp luôn á, nhưng mà, em mong, anh iu của em đừng yếu lòng nữa nhé, yêu anh lắm, em thật sự rất sợ, và em có trust issue, em nghĩ anh vẫn nhớ. 
+            
+            Em yêu anh nhiều, yêu tới nỗi tới chuyện này em cũng dặn lòng bỏ qua. Lần cuối nhé, em sẽ cố gắng, sau này, nếu có thích ai rồi, mong anh rõ ràng với em, thà vậy chứ giấu diếm thật sự em không chịu nổi và không biết đối diện thế nào. Những điều cần nói và muốn nói em cũng đã nói hết rồi. Hehe, em sẽ cố gắng đối diện. Yêu anh thật nhiều :3 
+
+            Mong anh cũng rút kinh nghiệm, em đi rồi sẽ chẳng quay lại nữa đâu, yêu anh lắm, thật sự rất yêu, anh nhớ nhe, trân trọng em nữa, như cách em không nỡ đánh mất anh, không muốn dở dang chuyện tình này. Em yêu anh lắm, em thiếu sót gì hay anh muốn gì, nói em nhe, đừng vậy nữa, em sợ lắm, thật sự rất sợ. Dù đã qua rồi, nhưng mà em cần rất nhiều thời gian, yêu lắm, đừng nói dối em nữa nha chồng.
+            
+            Em yêu anh nhiều nhiều, chúc bạn trai em hôm nay và cả những ngày về sau đều sống vui vẻ, đều nhớ đến em, đều biết rằng luôn có người trông chờ anh nhiều đến nhường nào. Em yêu Minh Cường rất nhiều, rất thật lòng chứ không chỉ là bồng bột tuổi trẻ, yêu anh <3 
+        </div>
+
+        <img src="1000031646.png" alt="Cute Cat" class="cat-sticker">
+    </div>
+
+    <script>
+        function openLetter() {
+            // Phát nhạc
+            const music = document.getElementById('bg-music');
+            music.play().catch(err => console.log("Music play blocked"));
+
+            // Hiệu ứng mờ nền và chuyển đổi giao diện mượt mà trên điện thoại
+            document.getElementById('bg').classList.add('blur');
+            document.getElementById('envelopeSection').classList.add('hide');
+
+            setTimeout(() => {
+                document.getElementById('letterBox').classList.add('show');
+            }, 250);
+        }
+    </script>
+</body>
+</html>
